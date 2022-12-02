@@ -15,21 +15,24 @@ const input = fs
   .map((el) => el.split(" "))
   .slice(0, -1);
 
-const part1 = input.reduce((total, [x, y]) => {
-  total += y === "X" ? 1 : y === "Y" ? 2 : 3;
-  return total + (map[y] === x ? 0 : map[x] === y ? 6 : 3);
-}, 0);
+const part1 = input.reduce(
+  (total, [x, y]) =>
+    total +
+    (map[y] === x ? 0 : map[x] === y ? 6 : 3) +
+    (y === "X" ? 1 : y === "Y" ? 2 : 3),
+  0
+);
 
-const part2 = input.reduce((total, [x, y]) => {
-  // lol
-  if (y === "X") {
-    total += (x === "A" ? 3 : x === "B" ? 1 : 2) + 0;
-  } else if (y === "Z") {
-    total += (x === "A" ? 2 : x === "B" ? 3 : 1) + 6;
-  } else {
-    total += (x === "A" ? 1 : x === "B" ? 2 : 3) + 3;
-  }
-  return total;
-}, 0);
+const part2 = input.reduce(
+  (total, [x, y]) =>
+    // lol
+    total +
+    (y === "X"
+      ? (x === "A" ? 3 : x === "B" ? 1 : 2) + 0
+      : y === "Z"
+      ? (x === "A" ? 2 : x === "B" ? 3 : 1) + 6
+      : (x === "A" ? 1 : x === "B" ? 2 : 3) + 3),
+  0
+);
 
 console.log({ part1, part2 });
