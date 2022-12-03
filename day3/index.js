@@ -6,7 +6,7 @@ const input = fs
 
 const getPriority = (char) => {
   if (!char) return;
-  return char && char.toLowerCase() === char
+  return char.toLowerCase() === char
     ? char.charCodeAt() - 96
     : char.charCodeAt() - 38;
 };
@@ -34,7 +34,7 @@ const p2Sum = input
   )
   .map((group) =>
     [...group[0]].find(
-      (char) => group[1].includes(char) & group[2].includes(char)
+      (char) => group[1].includes(char) && group[2].includes(char)
     )
   )
   .reduce((total, char) => total + (getPriority(char) || 0), 0);
