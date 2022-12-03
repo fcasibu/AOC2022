@@ -1,42 +1,97 @@
 const fs = require("fs");
 
 const input = fs
-  .readFileSync(process.cwd() + "/input.txt", "utf-8")
+  .readFileSync(__dirname + "/input.txt", "utf-8")
+  .trim()
   .split("\n");
 
-const getPriority = (char) => {
-  if (!char) return;
-  return char.toLowerCase() === char
-    ? char.charCodeAt() - 96
-    : char.charCodeAt() - 38;
+/* Refactored Solution */
+
+const getPriority = (item) => {
+  if (!item) return 0;
+  return item.toLowerCase() === item
+    ? item.charCodeAt() - 96
+    : item.charCodeAt() - 38;
 };
 
-const p1Sum = input
-  .map((compartment) => [
-    compartment.slice(0, compartment.length / 2),
-    compartment.slice(compartment.length / 2),
-  ])
-  .reduce(
-    (total, [a, b]) =>
-      total + (getPriority([...a].find((char) => b.includes(char))) || 0),
-    0
+const splitRucksack = (rucksack) => {
+  return [
+    rucksack.slice(0, rucksack.length / 2),
+    rucksack.slice(rucksack.length / 2),
+  ];
+};
+
+const getCompartmentPairs = (rucksacks) => {
+  return rucksacks.map(splitRucksack);
+};
+
+const getCommonItem = (compartments, finder) => {
+  return compartments.map(finder);
+};
+
+const getSumOfPriorities = (items) => {
+  return items.reduce((total, item) => total + getPriority(item), 0);
+};
+
+const getGroupsOfThree = (rucksacks) => {
+  return rucksacks.reduce(
+    (group, rucksack) => {
+      if (group[group.length - 1].length === 3) group.push([]);
+
+      group[group.length - 1].push(rucksack);
+      return group;
+    },
+    [[]]
   );
+};
+
+const p1Solution = (rucksacks) => {
+  const findCommon = ([firstCompartment, secondCompartment]) =>
+    [...firstCompartment].find((item) => secondCompartment.includes(item));
+
+  return getSumOfPriorities(
+    getCommonItem(getCompartmentPairs(rucksacks), findCommon)
+  );
+};
+
+const p2Solution = (rucksacks) => {
+  const findCommon = (groups) =>
+    [...groups[0]].find(
+      (item) => groups[1].includes(item) && groups[2].includes(item)
+    );
+
+  return getSumOfPriorities(
+    getCommonItem(getGroupsOfThree(rucksacks), findCommon)
+  );
+};
+
+console.log({ p1Sum: p1Solution(input), p2Sum: p2Solution(input) });
+
+/* Old Solution */
+
+/* const p1Sum = input
+  .map((rucksack) => [
+    rucksack.slice(0, rucksack.length / 2),
+    rucksack.slice(rucksack.length / 2),
+  ])
+  .map(([firstCompartment, secondCompartment]) =>
+    [...firstCompartment].find((item) => secondCompartment.includes(item))
+  )
+  .reduce((total, item) => total + (getPriority(item) || 0), 0);
 
 const p2Sum = input
   .reduce(
-    (group, item) => {
+    (group, rucksack) => {
       if (group[group.length - 1].length === 3) group.push([]);
 
-      group[group.length - 1].push(item);
+      group[group.length - 1].push(rucksack);
       return group;
     },
     [[]]
   )
-  .map((group) =>
-    [...group[0]].find(
-      (char) => group[1].includes(char) && group[2].includes(char)
+  .map((groups) =>
+    [...groups[0]].find(
+      (item) => groups[1].includes(item) && groups[2].includes(item)
     )
   )
-  .reduce((total, char) => total + (getPriority(char) || 0), 0);
-
-console.log({ p1Sum, p2Sum });
+  .reduce((total, item) => total + (getPriority(item) || 0), 0); */
