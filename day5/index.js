@@ -25,9 +25,9 @@ const sol = input
     const crates = [...inputCrates];
     const [crateCount, from, to] = [step[1], step[3], step[5]].map(Number);
 
-    const cratesToMove = crates.at(from - 1).splice(-crateCount, crateCount);
-    // crates.at(to - 1).push(...cratesToMove.reverse()); // part1
-    crates[to - 1].push(...cratesToMove); // part2
+    const cratesToMove = crates.at(from - 1).splice(-crateCount);
+    crates.at(to - 1).push(...cratesToMove.reverse()); // part1
+    // crates[to - 1].push(...cratesToMove); // part2
     return crates;
   })
   .reduce((acc, crates, i) => {
