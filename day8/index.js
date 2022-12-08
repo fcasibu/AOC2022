@@ -35,17 +35,12 @@ const getVisibleTrees = grid => {
       const rightOfTree = grid[i].slice(j + 1);
       const leftOfTree = grid[i].slice(0, j).reverse();
 
-      viewingDistance *= countViewingDistance(topOfTree, tree);
-      viewingDistance *= countViewingDistance(bottomOfTree, tree);
-      viewingDistance *= countViewingDistance(rightOfTree, tree);
-      viewingDistance *= countViewingDistance(leftOfTree, tree);
+      viewingDistance *= [topOfTree, bottomOfTree, leftOfTree, rightOfTree]
+        .reduce((acc, view) => acc * countViewingDistance(view, tree), 1);
 
-      if (tree > Math.max(...rightOfTree)
-        || tree > Math.max(...leftOfTree)
-        || tree > Math.max(...topOfTree)
-        || tree > Math.max(...bottomOfTree)) {
-        visibleTrees++;
-      }
+      [topOfTree, bottomOfTree, leftOfTree, rightOfTree]
+        .map(view => view.every(t => t < tree))
+        .some(Boolean) && visibleTrees++;
 
       maxScenicScore = Math.max(maxScenicScore, viewingDistance);
       viewingDistance = 1;
