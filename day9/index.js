@@ -6,16 +6,12 @@ const motions = fs.readFileSync(__dirname + '/input.txt', 'utf8')
   .map(line => line.split(" "))
   .map(line => ({ dir: line[0], steps: Number(line[1]) }));
 
-const visited = new Set();
-
 const dirs = {
   U: [0, -1],
   D: [0, 1],
   L: [-1, 0],
   R: [1, 0],
 };
-
-const start = [0, 0];
 
 const moveHead = (head, dir) => {
   const [x, y] = head;
@@ -65,23 +61,24 @@ const moveTailAdjacentToHead = (head, tail) => {
   return moveTailDiagonally(tail, head);
 }
 
-const stepper = (motions) => {
-  let knots = Array(10).fill(start)
+const stepper = (motions, n) => {
+  const visited = new Set();
+  const knots = Array(n).fill([0, 0])
 
   motions.forEach(({ dir, steps }) => {
-    for (let i = 1; i <= steps; ++i) {
+    for (let i = 0; i < steps; ++i) {
       knots.forEach((knot, idx) => {
         if (idx === 0) {
-          knots[idx] = moveHead(knot, dir)
+          knots[idx] = moveHead(knot, dir);
         } else {
-          knots[idx] = moveTail(knots.at(idx - 1), knot)
+          knots[idx] = moveTail(knots[idx - 1], knot);
         }
       })
-      // visited.add(knots.at(1).toString()) // part 1
-      visited.add(knots.at(-1).toString()); // part 2
+      visited.add(knots.at(-1).toString());
     }
   });
   return visited.size;
 }
 
-console.log(stepper(motions))
+console.log({ p1: stepper(motions, 2), p2: stepper(motions, 10) })
+
