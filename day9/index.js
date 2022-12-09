@@ -1,87 +1,84 @@
 const fs = require('fs')
 
-const motions = fs.readFileSync(__dirname + '/input.txt', 'utf8').trim().split('\n').map(line => line.split(" ")).map(line => ({ dir: line[0], steps: Number(line[1]) }));
+const motions = fs.readFileSync(__dirname + '/input.txt', 'utf8')
+  .trim()
+  .split('\n')
+  .map(line => line.split(" "))
+  .map(line => ({ dir: line[0], steps: Number(line[1]) }));
 
 const visited = new Set();
 
 const dirs = {
-  U: [1, 0],
-  D: [-1, 0],
-  L: [0, -1],
-  R: [0, 1],
+  U: [0, -1],
+  D: [0, 1],
+  L: [-1, 0],
+  R: [1, 0],
 };
 
 const start = [0, 0];
 
 const moveHead = (head, dir) => {
-  const [y, x] = head;
-  const [dy, dx] = dirs[dir];
-  const newHead = [y + dy, x + dx];
+  const [x, y] = head;
+  const [dx, dy] = dirs[dir];
+  const newHead = [x + dx, y + dy];
   return newHead;
 }
 
 const moveTailDiagonally = (tail, head) => {
-  const [y, x] = tail;
-  const [a, b] = head;
-  const [dy, dx] = [Math.sign(a - y), Math.sign(b - x)];
-  const newTail = [y + dy, x + dx];
+  const [x1, y1] = tail;
+  const [x2, y2] = head;
+  const [dx, dy] = [Math.sign(x2 - x1), Math.sign(y2 - y1)];
+  const newTail = [x1 + dx, y1 + dy];
   return newTail;
 }
 
 const moveTail = (head, tail) => {
-  const [y, x] = tail;
   if (checkIsTailStillAdjacent(head, tail)) {
-    return [y, x];
+    return tail;
   } else {
     return moveTailAdjacentToHead(head, tail);
   }
 }
 
 const checkIsTailStillAdjacent = (head, tail) => {
-  const [y, x] = head;
-  const [a, b] = tail;
-  return Math.abs(y - a) <= 1 && Math.abs(x - b) <= 1;
+  const [x1, y1] = head;
+  const [x2, y2] = tail;
+  return Math.abs(x1 - x2) <= 1 && Math.abs(y1 - y2) <= 1;
 }
 
 const moveTailAdjacentToHead = (head, tail) => {
-  const [y, x] = head;
-  const [a, b] = tail;
+  const [x1, y1] = head;
+  const [x2, y2] = tail;
 
-  if (y === a) {
-    const dx = Math.sign(b - x);
-    const newTail = [y, x + dx];
+  if (x1 === x2) {
+    const dy = Math.sign(y2 - y1);
+    const newTail = [x1, y1 + dy];
     return newTail;
   }
 
-  if (x === b) {
-    const dy = Math.sign(a - y);
-    const newTail = [y + dy, x];
+  if (y1 === y2) {
+    const dx = Math.sign(x2 - x1);
+    const newTail = [x1 + dx, y1];
     return newTail;
   }
 
   return moveTailDiagonally(tail, head);
 }
 
-
-
 const stepper = (motions) => {
-  let head = start;
-  let tails = Array(9).fill(start)
+  let knots = Array(10).fill(start)
 
   motions.forEach(({ dir, steps }) => {
     for (let i = 1; i <= steps; ++i) {
-      head = moveHead(head, dir);
-      tails[0] = moveTail(head, tails[0]);
-      tails[1] = moveTail(tails[0], tails[1]);
-      tails[2] = moveTail(tails[1], tails[2]);
-      tails[3] = moveTail(tails[2], tails[3]);
-      tails[4] = moveTail(tails[3], tails[4]);
-      tails[5] = moveTail(tails[4], tails[5]);
-      tails[6] = moveTail(tails[5], tails[6]);
-      tails[7] = moveTail(tails[6], tails[7]);
-      tails[8] = moveTail(tails[7], tails[8]);
-      // visited.add(tails[0].toString()) // part 1
-      visited.add(tails[8].toString()); // part 2
+      knots.forEach((knot, idx) => {
+        if (idx === 0) {
+          knots[idx] = moveHead(knot, dir)
+        } else {
+          knots[idx] = moveTail(knots.at(idx - 1), knot)
+        }
+      })
+      // visited.add(knots.at(1).toString()) // part 1
+      visited.add(knots.at(-1).toString()); // part 2
     }
   });
   return visited.size;
