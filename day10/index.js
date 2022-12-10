@@ -6,36 +6,40 @@ const instructions = fs.readFileSync(__dirname + "/input.txt", "utf8")
   .map(line => line.split(" "))
   .map(el => ({ op: el[0], arg: Number(el[1] ?? 0) }));
 
+const isSpriteOnPixel = (cycle, register, SCREEN_WIDTH) => {
+  const spritePosition = cycle % SCREEN_WIDTH;
+  return Math.abs(register - spritePosition) <= 1
+}
+
 const runProgram = (instructions) => {
   const nthCycles = [20, 60, 100, 140, 180, 220];
+  const SCREEN_WIDTH = 40;
   let register = 1;
   let cycle = 0;
   let sumOfCycles = 0;
   let pixels = "";
 
   for (const { op, arg } of instructions) {
-    if (op === "noop") {
-      pixels += Math.abs(register - (cycle % 40)) <= 1 ? "█" : ".";
+    if (op === "addx") {
+      pixels += isSpriteOnPixel(cycle, register, SCREEN_WIDTH) ? "█" : ".";
       cycle++;
-
       if (nthCycles.includes(cycle)) {
         sumOfCycles += register * cycle;
       }
-    } else {
-      for (let i = 0; i < 2; ++i) {
-        pixels += Math.abs(register - (cycle % 40)) <= 1 ? "█" : ".";
-        cycle++;
-        if (nthCycles.includes(cycle)) {
-          sumOfCycles += register * cycle;
-        }
-      }
-      register += arg;
     }
-  }
 
+    pixels += isSpriteOnPixel(cycle, register, SCREEN_WIDTH) ? "█" : ".";
+    cycle++;
+    if (nthCycles.includes(cycle)) {
+      sumOfCycles += register * cycle;
+    }
+
+    register += arg;
+  }
 
   return { sumOfCycles, pixels }
 }
+
 
 const { pixels, sumOfCycles } = runProgram(instructions);
 
