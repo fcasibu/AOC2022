@@ -2,13 +2,13 @@ const fs = require('fs');
 
 const input = fs.readFileSync(__dirname + '/input.txt', 'utf8').trim().split("\n\n");
 
-const toUpperCase = (str) => {
+const capitalize = (str) => {
   return str[0].toUpperCase() + str.slice(1).toLowerCase();
 }
 
 const toCamelCase = (str) => {
   const [first, ...rest] = str.trim().split(' ');
-  return first.toLowerCase() + rest.map(toUpperCase).join('');
+  return first.toLowerCase() + rest.map(capitalize).join('');
 }
 
 const monkeys = input.map(line => {
@@ -20,10 +20,8 @@ const monkeys = input.map(line => {
     const keyInCamelCase = toCamelCase(key);
     acc[keyInCamelCase === "test" ? "divisor" : keyInCamelCase] = value.trim();
     return acc;
-  }, {});
-});
-
-monkeys.forEach(monkey => {
+  }, {})
+}).map(monkey => {
   monkey.startingItems = monkey.startingItems.split(',').map(Number);
   const [operator, operand] = monkey.operation.split(" ").slice(-2);
   monkey.operation = { operator, operand };
@@ -31,6 +29,7 @@ monkeys.forEach(monkey => {
   monkey.ifTrue = Number(monkey.ifTrue.slice(-1))
   monkey.ifFalse = Number(monkey.ifFalse.slice(-1))
   monkey.inspected = 0;
+  return monkey;
 });
 
 const ops = {
