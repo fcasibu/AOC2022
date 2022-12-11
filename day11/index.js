@@ -17,16 +17,17 @@ const monkeys = input.map(line => {
   return monkey.reduce((acc, curr) => {
     const [key, value] = curr.split(":");
 
-    acc[toCamelCase(key)] = value.trim();
+    const keyInCamelCase = toCamelCase(key);
+    acc[keyInCamelCase === "test" ? "divisor" : keyInCamelCase] = value.trim();
     return acc;
   }, {});
 });
 
 monkeys.forEach(monkey => {
-  monkey.startingItems = monkey.startingItems.split(',').map(item => Number(item));
-  const [operation, operand] = monkey.operation.split(" ").slice(-2);
-  monkey.operation = { operation, operand };
-  monkey.divisor = Number(monkey.test.split(" ")[2])
+  monkey.startingItems = monkey.startingItems.split(',').map(Number);
+  const [operator, operand] = monkey.operation.split(" ").slice(-2);
+  monkey.operation = { operator, operand };
+  monkey.divisor = Number(monkey.divisor.split(" ")[2])
   monkey.ifTrue = Number(monkey.ifTrue.slice(-1))
   monkey.ifFalse = Number(monkey.ifFalse.slice(-1))
   monkey.inspected = 0;
@@ -44,8 +45,8 @@ const solve = (monkeys, TOTAL_ROUNDS, productOfDivisors) => {
       for (let i = monkey.startingItems.length - 1; i >= 0; --i) {
         monkey.inspected += 1;
         const old = monkey.startingItems.pop();
-        const { operation, operand } = monkey.operation;
-        const newWorryLevel = ops[operation](old, operand === "old" ? old : Number(operand));
+        const { operator, operand } = monkey.operation;
+        const newWorryLevel = ops[operator](old, operand === "old" ? old : Number(operand));
 
         // monkeys care only the divisbility?
         const worryLevelAfterMod = productOfDivisors ? newWorryLevel % productOfDivisors : Math.floor(newWorryLevel / 3);
@@ -74,6 +75,5 @@ const productOfDivisors = monkeys.reduce((acc, curr) => acc * curr.divisor, 1);
 
 const p1 = solve(monkeys, 20);
 const p2 = solve(monkeys, 10_000, productOfDivisors);
-console.log(p1)
 
 console.log({ p1: getLevelOfMonkeyBusiness(p1), p2: getLevelOfMonkeyBusiness(p2) });
