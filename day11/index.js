@@ -45,15 +45,16 @@ const solve = (monkeys, TOTAL_ROUNDS, productOfDivisors) => {
         monkey.inspected += 1;
         const old = monkey.startingItems.pop();
         const { operator, operand } = monkey.operation;
-        const newWorryLevel = ops[operator](old, operand === "old" ? old : Number(operand));
+        const newItem = ops[operator](old, operand === "old" ? old : Number(operand));
 
         // monkeys care only the divisbility?
-        const worryLevelAfterMod = productOfDivisors ? newWorryLevel % productOfDivisors : Math.floor(newWorryLevel / 3);
+        const itemToThrow = productOfDivisors ? newItem % productOfDivisors : Math.floor(newItem / 3);
+        const isItemDivisibleByDivisor = itemToThrow % monkey.divisor === 0;
 
-        if (worryLevelAfterMod % monkey.divisor === 0) {
-          clonedMonkeys[monkey.ifTrue].startingItems.push(worryLevelAfterMod);
+        if (isItemDivisibleByDivisor) {
+          clonedMonkeys[monkey.ifTrue].startingItems.push(itemToThrow);
         } else {
-          clonedMonkeys[monkey.ifFalse].startingItems.push(worryLevelAfterMod);
+          clonedMonkeys[monkey.ifFalse].startingItems.push(itemToThrow);
         }
       }
     });
