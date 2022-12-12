@@ -51,12 +51,10 @@ const getNeighbors = (grid, [row, col], val) => {
                 neighborCol < grid[0].length,
         )
         .filter(([neighborRow, neighborCol]) => {
-            const gridValue = grid[neighborRow][neighborCol];
-            if (gridValue === "E" || val === "S") {
-                return true;
-            } else {
-                return gridValue.charCodeAt() <= val.charCodeAt() + 1;
-            }
+            let gridValue = grid[neighborRow][neighborCol];
+            if (gridValue === 'E') gridValue = 'z';
+            if (val === 'S') val = 'a';
+            return gridValue.charCodeAt() <= val.charCodeAt() + 1;
         });
 };
 
