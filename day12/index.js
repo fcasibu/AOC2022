@@ -10,10 +10,13 @@ const grid = input.map((row) => row.split(""));
 const bfs = (grid, startingPoints, end) => {
     const visited = new Set();
     const queue = startingPoints.map((point) => ({ point, val: "S", moves: 0 }));
-    visited.add(JSON.stringify(queue[0]));
 
     while (queue.length) {
         const node = queue.shift();
+
+        if (visited.has(JSON.stringify(node.point))) continue
+
+        visited.add(JSON.stringify(node.point));
 
         if (node.val === end) {
             return node.moves;
@@ -21,9 +24,7 @@ const bfs = (grid, startingPoints, end) => {
 
         queue.push(
             ...getNeighbors(grid, node.point, node.val)
-                .filter((neighbor) => !visited.has(JSON.stringify(neighbor)))
                 .map((neighbor) => {
-                    visited.add(JSON.stringify(neighbor));
                     return {
                         point: neighbor,
                         val: grid[neighbor[0]][neighbor[1]],
