@@ -32,7 +32,6 @@ class Particle {
 
 class Cave {
     particles = new Map();
-    droppingPoint = new Particle({ x: 500, y: 0 });
     bottomParticle = 0;
 
     constructor(input) {
@@ -131,9 +130,10 @@ class Cave {
 const sleep = (delay) => new Promise((res) => setTimeout(res, delay));
 
 function part1(cave) {
+    const droppingPoint = new Particle({ x: 500, y: 0 });
     let unitsOfSand = 0;
     while (true) {
-        const sand = new Particle(cave.droppingPoint, "o");
+        const sand = new Particle(droppingPoint, "o");
         const droppedSand = cave.dropSand(sand);
 
         if (!droppedSand) break;
@@ -147,9 +147,10 @@ function part1(cave) {
 }
 
 function part2(cave) {
+    const droppingPoint = new Particle({ x: 500, y: 0 });
     let unitsOfSand = 0;
     while (true) {
-        let sand = new Particle(cave.droppingPoint, "o");
+        let sand = new Particle(droppingPoint, "o");
         let droppedSand = cave.dropSand(sand);
 
         if (droppedSand) {
@@ -159,7 +160,7 @@ function part2(cave) {
         cave.setParticle(sand.toString(), sand);
         unitsOfSand++;
 
-        if (sand.toString() === cave.droppingPoint.toString()) {
+        if (sand.toString() === droppingPoint.toString()) {
             break;
         }
     }
